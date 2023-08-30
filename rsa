@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+"""
+Factorize RSA numbers into a product of two prime numbers
+"""
+import sys
+import math
+import time
+
+
+def is_prime(digit):
+    if digit <= 1:
+        return False
+    if digit <= 3:
+        return True
+    if digit % 2 == 0 or digit % 3 == 0:
+        return False
+    i = 5
+    while i * i <= digit:
+        if digit % i == 0 or digit % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+
+def factorize_rsa_numbers(filename):
+    try:
+        with open(filename, 'r') as f:
+            for line in f:
+                n = int(line.strip())
+                start_time = time.time()
+                for i in range(2, int(math.sqrt(n)) + 1):
+                    if n % i == 0 and is_prime(i) and is_prime(n // i):
+                        p = i
+                        q = n // i
+                        elapsed_time = time.time() - start_time
+                        if elapsed_time <= 5:
+                            print(f"{n} = {p} * {q}")
+                        break
+                else:
+                    print(f"Unable to factorize {n} within 5 seconds")
+    except (IndexError, ValueError):
+        pass
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: rsa <input_file>")
+    else:
+        input_file = sys.argv[1]
+        factorize_rsa_numbers(input_file)
